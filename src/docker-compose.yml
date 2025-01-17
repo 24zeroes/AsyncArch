@@ -1,0 +1,6 @@
+﻿services:
+  popug.auth:
+    image: popug.auth
+    build:
+      context: .
+      dockerfile: Popug.Auth/Dockerfile

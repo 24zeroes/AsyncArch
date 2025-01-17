@@ -1,0 +1,21 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Popug.Auth", "Popug.Auth\Popug.Auth.csproj", "{EA6F8E2A-4A7E-46E5-8D89-820FDED93AF6}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{4DD90E98-8522-492F-A566-0372055A5A23}"
+	ProjectSection(SolutionItems) = preProject
+		docker-compose.yml = docker-compose.yml
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{EA6F8E2A-4A7E-46E5-8D89-820FDED93AF6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EA6F8E2A-4A7E-46E5-8D89-820FDED93AF6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EA6F8E2A-4A7E-46E5-8D89-820FDED93AF6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EA6F8E2A-4A7E-46E5-8D89-820FDED93AF6}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal
