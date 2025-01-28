@@ -3,10 +3,13 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Popug.Auth.Data;
 
-public class ApplicationDbContext : IdentityDbContext
+public class AuthDbContext : DbContext
 {
-    public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
+    public AuthDbContext(DbContextOptions<AuthDbContext> options)
         : base(options)
     {
+        
     }
+    
+    public DbSet<User> Users => Set<User>();
 }

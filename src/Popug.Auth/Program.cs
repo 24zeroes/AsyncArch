@@ -8,17 +8,41 @@ public class Program
 {
     public static void Main(string[] args)
     {
+        if (args.Contains("--migrate"))
+        {
+            // Need to use ConfigurationBuilder to retrieve connection string from appsettings.json
+            var configuration = new ConfigurationBuilder()
+                .AddJsonFile("appsettings.json")
+                .Build();
+
+            var optionsBuilder = new DbContextOptionsBuilder<AuthDbContext>();
+            optionsBuilder.UseSqlite(configuration.GetConnectionString("DefaultConnection"));
+
+
+            try
+            {
+                // There is no DI at current step, so need to create context manually
+                using var dbContext = new AuthDbContext(optionsBuilder.Options);
+                dbContext.Database.MigrateAsync().GetAwaiter().GetResult();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+            
+            Console.WriteLine("Migration success");
+            return;
+        }
         var builder = WebApplication.CreateBuilder(args);
 
         // Add services to the container.
         var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ??
                                throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
-        builder.Services.AddDbContext<ApplicationDbContext>(options =>
+        builder.Services.AddDbContext<AuthDbContext>(options =>
             options.UseSqlite(connectionString));
         builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
-        builder.Services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
-            .AddEntityFrameworkStores<ApplicationDbContext>();
         builder.Services.AddRazorPages();
 
         var app = builder.Build();
