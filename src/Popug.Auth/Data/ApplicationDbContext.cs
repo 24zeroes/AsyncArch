@@ -1,7 +1,7 @@
 ﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
-namespace Popug.Auth.Domain;
+namespace Popug.Auth.Data;
 
 public class ApplicationDbContext : IdentityDbContext
 {

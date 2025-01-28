@@ -5,9 +5,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		docker-compose.yml = docker-compose.yml
 	EndProjectSection
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Popug.Auth", "Popug.Auth\Popug.Auth.csproj", "{D1B5E369-9BBF-479A-8A14-5720C8DF5C17}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Auth", "Auth", "{1880682A-86A5-4901-A3C1-066096D17B84}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Popug.Auth", "Popug.Auth\Popug.Auth.csproj", "{570D0D9E-0827-4F0C-84F0-58E2FC953A4A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,12 +15,12 @@ Global
 		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{D1B5E369-9BBF-479A-8A14-5720C8DF5C17}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{D1B5E369-9BBF-479A-8A14-5720C8DF5C17}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{D1B5E369-9BBF-479A-8A14-5720C8DF5C17}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{D1B5E369-9BBF-479A-8A14-5720C8DF5C17}.Release|Any CPU.Build.0 = Release|Any CPU
+		{570D0D9E-0827-4F0C-84F0-58E2FC953A4A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{570D0D9E-0827-4F0C-84F0-58E2FC953A4A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{570D0D9E-0827-4F0C-84F0-58E2FC953A4A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{570D0D9E-0827-4F0C-84F0-58E2FC953A4A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
-		{D1B5E369-9BBF-479A-8A14-5720C8DF5C17} = {1880682A-86A5-4901-A3C1-066096D17B84}
+		{570D0D9E-0827-4F0C-84F0-58E2FC953A4A} = {1880682A-86A5-4901-A3C1-066096D17B84}
 	EndGlobalSection
 EndGlobal
