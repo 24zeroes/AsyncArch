@@ -1,6 +1,8 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi.Models;
 using Popug.Auth.Data;
+using Popug.Auth.Security;
 
 namespace Popug.Auth;
 
@@ -42,14 +44,23 @@ public class Program
         builder.Services.AddDbContext<AuthDbContext>(options =>
             options.UseSqlite(connectionString));
         builder.Services.AddDatabaseDeveloperPageExceptionFilter();
+        
+        builder.Services.AddTransient<Cryptor>();
 
-        builder.Services.AddRazorPages();
+        builder.Services.AddControllers();
+        // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
+        builder.Services.AddOpenApi();
+        builder.Services.AddSwaggerGen(c =>
+        {
+            c.SwaggerDoc("v1", new OpenApiInfo { Title = "Auth", Version = "v1" });
+        });
 
         var app = builder.Build();
 
         // Configure the HTTP request pipeline.
         if (app.Environment.IsDevelopment())
         {
+            app.MapOpenApi();
             app.UseMigrationsEndPoint();
         }
         else
@@ -65,10 +76,12 @@ public class Program
 
         app.UseAuthorization();
 
-        app.MapStaticAssets();
-        app.MapRazorPages()
-            .WithStaticAssets();
-
+        app.MapControllers();
+        app.UseSwagger();
+        app.UseSwaggerUI(c =>
+        {
+            c.SwaggerEndpoint("v1/swagger.json", "Auth v1");
+        });
         app.Run();
     }
 }
