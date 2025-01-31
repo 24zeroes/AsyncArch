@@ -10,6 +10,7 @@ namespace Popug.Auth.Controllers;
 [Route("[controller]")]
 public class AuthController : ControllerBase
 {
+    private const string SsoTokenKey = "ssoToken";
     private readonly Cryptor _cryptor;
     private readonly AuthDbContext _context;
     private readonly IConfiguration _configuration;
@@ -39,8 +40,7 @@ public class AuthController : ControllerBase
             Domain = _configuration["DomainName"],
             Path = "/",
         };
-
-        HttpContext.Response.Cookies.Append("ssoToken", token, cookie);
+        HttpContext.Response.Cookies.Append(SsoTokenKey, token, cookie);
         
         return Ok(token);
     }
@@ -63,8 +63,12 @@ public class AuthController : ControllerBase
     }
     
     [HttpGet("/check")]  
-    public async Task<ActionResult<string>> Check([FromQuery] string token)
+    public async Task<ActionResult<string>> Check()
     {
+        HttpContext.Request.Cookies.TryGetValue(SsoTokenKey, out var token);
+        if (token is null)
+            return Unauthorized();
+        
         var user = JsonSerializer.Deserialize<User>(_cryptor.Decrypt(token));
         if (!await _context.Users.Where(x => x.Username == user.Username).AnyAsync())
             return Unauthorized();
