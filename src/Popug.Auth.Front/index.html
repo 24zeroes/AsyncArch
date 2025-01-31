@@ -1,0 +1,79 @@
+<!doctype html>
+<html>
+    <head>
+        <title>Auth</title>
+        <link rel="stylesheet" href="bundle/mvp.css"> 
+        <meta name="htmx-config" content='{"selfRequestsOnly":false}'>
+        <style>
+            body {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                height: 100vh;
+                background-color: #f4f4f4;
+                font-family: Arial, sans-serif;
+            }
+            .login-container {
+                background: white;
+                padding: 20px;
+                border-radius: 8px;
+                box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            }
+            .form-group {
+                margin-bottom: 15px;
+            }
+
+            input[type="text"],
+            input[type="password"] {
+                width: 100%;
+                padding: 8px;
+                margin-top: 5px;
+                border: 1px solid #ccc;
+                border-radius: 4px;
+            }
+        </style>
+        <script>
+            function login(event) {
+                event.preventDefault();
+                const username = document.getElementById('username').value;
+                const password = document.getElementById('password').value;
+
+                const urlParams = new URLSearchParams(document.location.search);
+                const returnUrl = urlParams.get('returnUrl');
+                
+                fetch('https://localhost:7056/auth', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    credentials: 'include',
+                    body: JSON.stringify({ username, password })
+                })
+                .then(response => {
+                    if (response.status === 200) {
+                        window.location.href = returnUrl;
+                    } else {
+                        throw new Error('Login failed!');
+                    }
+                })
+                .catch(error => alert('Login failed!'));
+            }
+        </script>
+    </head>
+    <body>
+        <div class="login-container">
+            <h2>Login</h2>
+            <form onsubmit="login(event)">
+                <div class="form-group">
+                    <label for="username">Username</label>
+                    <input type="text" id="username" name="username" required>
+                </div>
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" required>
+                </div>
+                <button type="submit">Login</button>
+            </form>
+        </div>
+    </body>
+</html>
