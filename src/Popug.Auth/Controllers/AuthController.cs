@@ -12,11 +12,13 @@ public class AuthController : ControllerBase
 {
     private readonly Cryptor _cryptor;
     private readonly AuthDbContext _context;
+    private readonly IConfiguration _configuration;
     
-    public AuthController(AuthDbContext context, Cryptor cryptor)
+    public AuthController(AuthDbContext context, Cryptor cryptor, IConfiguration configuration)
     {
         _cryptor = cryptor;
         _context = context;
+        _configuration = configuration;
     }
     
     [HttpPost]
@@ -28,6 +30,17 @@ public class AuthController : ControllerBase
             return BadRequest("No such user exists");
 
         var token = _cryptor.Encrypt(JsonSerializer.Serialize(user));
+        var cookie = new CookieOptions
+        {
+            HttpOnly = true,
+            Expires = DateTime.UtcNow.AddHours(24),
+            SameSite = SameSiteMode.None,
+            Secure = true,
+            Domain = _configuration["DomainName"],
+            Path = "/",
+        };
+
+        HttpContext.Response.Cookies.Append("ssoToken", token, cookie);
         
         return Ok(token);
     }

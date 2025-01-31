@@ -8,6 +8,8 @@ namespace Popug.Auth;
 
 public class Program
 {
+    const string AllowDevOrigins = "_allowDevOrigins";
+    
     public static void Main(string[] args)
     {
         if (args.Contains("--migrate"))
@@ -38,6 +40,19 @@ public class Program
         }
         var builder = WebApplication.CreateBuilder(args);
 
+        builder.Services.AddCors(options =>
+        {
+            options.AddPolicy(name: AllowDevOrigins,
+                policy  =>
+                {
+                    policy.WithOrigins(
+                        "http://localhost:8080",
+                        "http://localhost:8081")
+                        .AllowAnyHeader()
+                        .AllowCredentials();
+                });
+        });
+        
         // Add services to the container.
         var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ??
                                throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
@@ -56,10 +71,11 @@ public class Program
         });
 
         var app = builder.Build();
-
+        
         // Configure the HTTP request pipeline.
         if (app.Environment.IsDevelopment())
         {
+            app.UseCors(AllowDevOrigins);
             app.MapOpenApi();
             app.UseMigrationsEndPoint();
         }
