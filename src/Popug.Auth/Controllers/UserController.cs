@@ -44,7 +44,10 @@ public class UserController : ControllerBase
     [HttpPost("/user/add")]
     public async Task<ActionResult> AddUser([FromBody]AddUserRequest request)
     {
-        if (await _context.Users.Include(u => u.Claims).Where(x => x.Username == request.Username).AnyAsync())
+        if (request.Claims.Count == 0)
+            return BadRequest("User should contain at least one claim. Use default 'user' claim");
+        
+        if (await _context.Users.Where(x => x.Username == request.Username).AnyAsync())
             return BadRequest("Username already exists");
         var newUser = new User()
         {
