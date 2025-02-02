@@ -40,8 +40,8 @@ public class ClaimController : ControllerBase
     {
         var user = await _context.Users.Include(u => u.Claims).FirstAsync(x => x.Username == request.Username);
         
-        if (user.Claims.Any(x => x.Name == request.Claim))
-            return BadRequest($"User do not have such a claim {request.Claim}");
+        if (user.Claims.All(x => x.Name != request.Claim))
+            return BadRequest($"User do not have such a claim {request.Username}");
         
         if (user.Claims.Count == 1)
             return BadRequest($"Cannot delete last claim for user {request.Claim}");

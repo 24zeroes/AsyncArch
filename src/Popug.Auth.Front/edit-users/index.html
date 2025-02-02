@@ -129,12 +129,13 @@
                 addClaim(user.username, claimInput.value.trim(), function(success, errorMessage) {
                     addButton.disabled = false;
                     if (success) {
-                    // Update UI: add the new claim to the list.
-                    const li = createClaimListItem(user.username, claimInput.value.trim());
-                    claimsList.appendChild(li);
-                    claimInput.value = "";
-                    } else {
-                    alert("Error adding claim: " + errorMessage);
+                        // Update UI: add the new claim to the list.
+                        const li = createClaimListItem(user.username, claimInput.value.trim());
+                        claimsList.appendChild(li);
+                        claimInput.value = "";
+                    } 
+                    else {
+                        alert("Error adding claim: " + errorMessage);
                     }
                 });
                 };
@@ -189,11 +190,11 @@
                 if (response.ok) {
                     callback(true);
                 } else {
-                    return response.json().then(err => { callback(false, err.message || "Unknown error"); });
+                    return response.text().then(err => { callback(false, err || "Unknown error"); });
                 }
                 })
                 .catch(error => {
-                callback(false, error.message || "Network error");
+                    callback(false, error.message || "Network error");
                 });
         }
         
@@ -212,7 +213,7 @@
                 if (response.ok) {
                     callback(true);
                 } else {
-                    return response.json().then(err => { callback(false, err.message || "Unknown error"); });
+                    return response.text().then(err => { callback(false, err || "Unknown error"); });
                 }
                 })
                 .catch(error => {
