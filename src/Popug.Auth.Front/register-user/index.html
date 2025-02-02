@@ -1,0 +1,146 @@
+<!doctype html>
+<html>
+    <head>
+        <title>Register</title>
+        <link rel="stylesheet" href="../bundle/mvp.css">
+        <link rel="stylesheet" href="../style.css">
+        <style>
+            input[type="text"],
+            input[type="password"] {
+                width: 100%;
+                padding: 8px;
+                border: 1px solid #ccc;
+                border-radius: 4px;
+            }
+            button {
+                padding: 10px 15px;
+                border: none;
+                background: #3676b3;
+                color: white;
+                border-radius: 4px;
+                cursor: pointer;
+            }
+            button:hover {
+                background: #265a94;
+            }
+            /* Error message styling */
+            .error-message {
+                color: red;
+                margin-bottom: 15px;
+            }
+        </style>
+        <script>
+            function registerUser(event) {
+                event.preventDefault();
+
+                // Clear previous error messages.
+                document.getElementById("error-message").textContent = "";
+
+                // Gather the input values.
+                const username = document.getElementById('username').value.trim();
+                const password = document.getElementById('password').value;
+                const repeatPassword = document.getElementById('repeat-password').value;
+
+                // Client-side password match check.
+                if (password !== repeatPassword) {
+                    document.getElementById("error-message").textContent = "Passwords do not match.";
+                    return;
+                }
+
+                // Create the payload.
+                const payload = {
+                    username: username,
+                    password: password
+                };
+
+                // Send the POST request to register the user.
+                fetch('https://localhost:7056/user/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    credentials: 'include',
+                    body: JSON.stringify(payload)
+                })
+                .then(response => {
+                    if (response.ok) {
+                        return response;
+                    } else {
+                        // Convert the error response to JSON to read error messages.
+                        return response.text().then(text => {throw new Error(text)});
+                    }
+                })
+                .then(data => {
+                    // On success, inform the user and redirect after confirmation.
+                    if (confirm("Account created successfully! Click OK to login.")) {
+                        window.location.href = "/login";
+                    }
+                })
+                .catch(error => {
+                    // Display error messages received from the server.
+                    let errorMsg = error || "Registration failed. Please try again.";
+                    document.getElementById("error-message").textContent = errorMsg;
+                });
+            }
+        </script>
+    </head>
+    <body>
+        <!-- Global Header -->
+        <div class="header">
+            <div class="badge">Auth</div>
+        </div>
+
+        <!-- Centered container for sidebar and main content -->
+        <div class="container">
+            <!-- Left-side Menu -->
+            <div class="sidebar">
+                <!-- Adjust these links as needed -->
+                <a href="/login">Login</a>
+                <a href="/register">Register</a>
+            </div>
+
+            <!-- Main Content Area -->
+            <div class="main-content">
+                <div class="content-container">
+                    <h2>Register</h2>
+                    <!-- Display error messages here -->
+                    <div id="error-message" class="error-message"></div>
+                    <form onsubmit="registerUser(event)">
+                        <div class="form-group">
+                            <label for="username">Username</label>
+                            <input type="text" id="username" name="username" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="password">Password</label>
+                            <input type="password" id="password" name="password" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="repeat-password">Repeat Password</label>
+                            <input type="password" id="repeat-password" name="repeat-password" required>
+                        </div>
+                        <button type="submit">Register</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <!-- Optional: Include logout function if the user is logged in -->
+        <script>
+            function logout(event) {
+                event.preventDefault();
+                fetch('https://localhost:7056/logout', {
+                    method: 'GET',
+                    credentials: 'include'
+                })
+                .then(response => {
+                    if (response.ok) {
+                        window.location.reload();
+                    } else {
+                        throw new Error('Logout failed!');
+                    }
+                })
+                .catch(error => alert('Logout failed!'));
+            }
+        </script>
+    </body>
+</html>

@@ -1,0 +1,207 @@
+<!doctype html>
+<html>
+    <head>
+        <title>Create User (Admin)</title>
+        <link rel="stylesheet" href="../bundle/mvp.css">
+        <link rel="stylesheet" href="../style.css">
+        <script type="text/javascript" src="/js/authCheck.js"></script>
+        <style>
+            input[type="text"],
+            input[type="password"] {
+                width: 100%;
+                padding: 8px;
+                border: 1px solid #ccc;
+                border-radius: 4px;
+            }
+            button {
+                padding: 10px 15px;
+                border: none;
+                background: #3676b3;
+                color: white;
+                border-radius: 4px;
+                cursor: pointer;
+            }
+            button:hover {
+                background: #265a94;
+            }
+            /* Error message styling */
+            .error-message {
+                color: red;
+                margin-bottom: 15px;
+            }
+            /* Claims list styling */
+            #claims-list {
+                margin-top: 10px;
+                list-style: none;
+                padding: 0;
+            }
+            #claims-list li {
+                background: #f0f0f0;
+                padding: 5px 10px;
+                margin-bottom: 5px;
+                border-radius: 4px;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+            }
+            #claims-list li button {
+                background: #e74c3c;
+                border: none;
+                color: white;
+                padding: 3px 7px;
+                border-radius: 3px;
+                cursor: pointer;
+                font-size: 12px;
+            }
+            #claims-list li button:hover {
+                background: #c0392b;
+            }
+        </style>
+        <script>
+            function logout(event) {
+                event.preventDefault();
+                fetch('https://localhost:7056/logout', {
+                    method: 'GET',
+                    credentials: 'include'
+                })
+                .then(response => {
+                    if (response.ok) {
+                        window.location.href = '/login';
+                    } else {
+                        throw new Error('Logout failed!');
+                    }
+                })
+                .catch(error => alert('Logout failed!'));
+            }
+            
+            // We'll store the claims in a JavaScript array.
+            let claims = [];
+
+            function updateClaimsDisplay() {
+                const list = document.getElementById("claims-list");
+                list.innerHTML = "";
+                claims.forEach((claim, index) => {
+                    const li = document.createElement("li");
+                    li.textContent = claim;
+                    // Create remove button for each claim.
+                    const removeBtn = document.createElement("button");
+                    removeBtn.textContent = "Remove";
+                    removeBtn.onclick = function () {
+                        claims.splice(index, 1);
+                        updateClaimsDisplay();
+                    };
+                    li.appendChild(removeBtn);
+                    list.appendChild(li);
+                });
+            }
+
+            function addClaim(event) {
+                event.preventDefault();
+                const claimInput = document.getElementById("claim-input");
+                const claimText = claimInput.value.trim();
+                if (claimText !== "") {
+                    claims.push(claimText);
+                    updateClaimsDisplay();
+                    claimInput.value = "";
+                }
+            }
+
+            function createUser(event) {
+                event.preventDefault();
+                // Clear previous error messages.
+                document.getElementById("error-message").textContent = "";
+
+                // Gather values.
+                const username = document.getElementById('username').value.trim();
+                const password = document.getElementById('password').value;
+                const repeatPassword = document.getElementById('repeat-password').value;
+
+                // Check if passwords match.
+                if (password !== repeatPassword) {
+                    document.getElementById("error-message").textContent = "Passwords do not match.";
+                    return;
+                }
+
+                const payload = {
+                    username: username,
+                    password: password,
+                    claims: claims // claims is an array of strings.
+                };
+
+                // Send POST request to create the user.
+                fetch('https://localhost:7056/user/add', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    credentials: 'include',
+                    body: JSON.stringify(payload)
+                })
+                .then(response => {
+                    if (response.ok) {
+                        return response.text();
+                    } else {
+                        return response.text().then(text => {throw new Error(text)});
+                    }
+                })
+                .then(data => {
+                    // On success, inform the admin and redirect or refresh.
+                    if (confirm("User created successfully! Click OK to continue.")) {
+                        window.location.reload();
+                    }
+                })
+                .catch(error => {
+                    let errorMsg = error.message || "User creation failed. Please try again.";
+                    document.getElementById("error-message").textContent = errorMsg;
+                });
+            }
+        </script>
+    </head>
+    <body>
+        <!-- Global Header -->
+        <div class="header">
+            <div class="badge">Auth</div>
+        </div>
+
+        <!-- Centered container for sidebar and main content -->
+        <div class="container">
+            <!-- Left-side Menu -->
+            <div class="sidebar">
+                <a href="/">Current User Info</a>
+                <a href="/create-user">Add User</a>
+                <a href="/edit-users">Edit Claims</a>
+                <a href="#" onclick="logout(event)">Logout</a>
+            </div>
+
+            <!-- Main Content Area -->
+            <div class="main-content">
+                <div class="content-container">
+                    <h2>Create User (Admin)</h2>
+                    <!-- Error messages -->
+                    <div id="error-message" class="error-message"></div>
+                    <form onsubmit="createUser(event)">
+                        <div class="form-group">
+                            <label for="username">Username</label>
+                            <input type="text" id="username" name="username" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="password">Password</label>
+                            <input type="password" id="password" name="password" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="repeat-password">Repeat Password</label>
+                            <input type="password" id="repeat-password" name="repeat-password" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="claim-input">Add Claim</label>
+                            <input type="text" id="claim-input" name="claim-input">
+                            <button onclick="addClaim(event)">Add Claim</button>
+                        </div>
+                        <ul id="claims-list"></ul>
+                        <button type="submit">Create User</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>

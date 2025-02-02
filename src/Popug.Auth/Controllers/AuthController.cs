@@ -45,23 +45,6 @@ public class AuthController : ControllerBase
         return Ok(token);
     }
     
-    [HttpPost("/user/add")]
-    public async Task<ActionResult> AddUser([FromBody]AddUserRequest request)
-    {
-        if (await _context.Users.Where(x => x.Username == request.Username).AnyAsync())
-            return BadRequest("Username already exists");
-        var newUser = new User()
-        {
-            Username = request.Username,
-            PasswordHash = _cryptor.GetHash(request.Password),
-            ClaimList = string.Join(", ", request.Claims),
-        };
-        await _context.Users.AddAsync(newUser);
-        await _context.SaveChangesAsync();
-        
-        return Ok();
-    }
-    
     [HttpGet("/check")]  
     public async Task<ActionResult<string>> Check()
     {
@@ -75,17 +58,21 @@ public class AuthController : ControllerBase
         
         return Ok();
     }
+    
+    [HttpGet("/logout")]  
+    public async Task<ActionResult<string>> Logout()
+    {
+        HttpContext.Request.Cookies.TryGetValue(SsoTokenKey, out var token);
+        if (token is null)
+            return Unauthorized();
+        
+        HttpContext.Response.Cookies.Delete(SsoTokenKey);
+        return Ok();
+    }
 }
 
 public class LoginRequest
 {
     public string Username { get; set; }
     public string Password { get; set; }
-}
-
-public class AddUserRequest
-{
-    public string Username { get; set; }
-    public string Password { get; set; }
-    public List<string> Claims { get; set; }
 }

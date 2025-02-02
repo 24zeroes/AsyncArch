@@ -1,0 +1,272 @@
+<!doctype html>
+<html>
+  <head>
+    <title>User Management (Admin)</title>
+    <link rel="stylesheet" href="../bundle/mvp.css">
+    <link rel="stylesheet" href="../style.css">
+    <script type="text/javascript" src="/js/authCheck.js"></script>
+    <style>
+        /* User list styles */
+        .user {
+            border-bottom: 1px solid #ddd;
+            padding-bottom: 15px;
+            margin-bottom: 15px;
+        }
+        .user h3 {
+            margin-bottom: 10px;
+        }
+        .claims-list {
+            list-style: none;
+            padding-left: 0;
+            margin-bottom: 10px;
+        }
+        .claims-list li {
+            background: #f0f0f0;
+            padding: 5px 10px;
+            margin-bottom: 5px;
+            border-radius: 4px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .claims-list li button {
+            background: #e74c3c;
+            border: none;
+            color: white;
+            padding: 3px 7px;
+            border-radius: 3px;
+            cursor: pointer;
+            font-size: 12px;
+        }
+        .claims-list li button:hover {
+            background: #c0392b;
+        }
+        .add-claim-container {
+            margin-top: 10px;
+        }
+        .add-claim-container input[type="text"] {
+            padding: 6px;
+            width: 70%;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        .add-claim-container button {
+            padding: 6px 10px;
+            margin-left: 5px;
+            border: none;
+            background: #3676b3;
+            color: white;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .add-claim-container button:hover {
+            background: #265a94;
+        }
+        /* Error message styling */
+        .error-message {
+            color: red;
+            margin-bottom: 10px;
+        }
+    </style>
+    <script>
+        // Fetch all users with their claims.
+        function loadUsers() {
+        fetch('https://localhost:7056/user/list', {
+            method: 'GET',
+            credentials: 'include'
+        })
+            .then(response => {
+            if (!response.ok) {
+                throw new Error("Failed to load users");
+            }
+            return response.json();
+            })
+            .then(data => {
+            // data is expected to be an array of user objects: { username, claims: [ ... ] }
+            displayUsers(data);
+            })
+            .catch(error => {
+            document.getElementById("error-message-global").textContent = error.message || "Error loading users.";
+            });
+        }
+        
+        // Display users and their claims in the UI.
+        function displayUsers(users) {
+            const container = document.getElementById("users-container");
+            container.innerHTML = ""; // Clear previous content.
+            users.forEach(user => {
+                const userDiv = document.createElement("div");
+                userDiv.className = "user";
+                
+                const header = document.createElement("h3");
+                header.textContent = user.username;
+                userDiv.appendChild(header);
+                
+                // Create a list for the user's claims.
+                const claimsList = document.createElement("ul");
+                claimsList.className = "claims-list";
+                user.claims.forEach(claim => {
+                const li = createClaimListItem(user.username, claim);
+                claimsList.appendChild(li);
+                });
+                userDiv.appendChild(claimsList);
+                
+                // Container to add a new claim.
+                const addClaimContainer = document.createElement("div");
+                addClaimContainer.className = "add-claim-container";
+                
+                const claimInput = document.createElement("input");
+                claimInput.type = "text";
+                claimInput.placeholder = "New claim";
+                addClaimContainer.appendChild(claimInput);
+                
+                const addButton = document.createElement("button");
+                addButton.textContent = "Add Claim";
+                addButton.onclick = function(event) {
+                event.preventDefault();
+                // Disable the add button until the request completes.
+                addButton.disabled = true;
+                addClaim(user.username, claimInput.value.trim(), function(success, errorMessage) {
+                    addButton.disabled = false;
+                    if (success) {
+                    // Update UI: add the new claim to the list.
+                    const li = createClaimListItem(user.username, claimInput.value.trim());
+                    claimsList.appendChild(li);
+                    claimInput.value = "";
+                    } else {
+                    alert("Error adding claim: " + errorMessage);
+                    }
+                });
+                };
+                addClaimContainer.appendChild(addButton);
+                
+                userDiv.appendChild(addClaimContainer);
+                container.appendChild(userDiv);
+            });
+        }
+        
+        // Create a list item element for a claim with a remove button.
+        function createClaimListItem(username, claim) {
+            const li = document.createElement("li");
+            li.textContent = claim;
+            
+            const removeBtn = document.createElement("button");
+            removeBtn.textContent = "Remove";
+            removeBtn.onclick = function(event) {
+                event.preventDefault();
+                // Disable the remove button while the request is in progress.
+                removeBtn.disabled = true;
+                removeClaim(username, claim, function(success, errorMessage) {
+                removeBtn.disabled = false;
+                if (success) {
+                    // Remove the claim element from the UI.
+                    li.parentNode.removeChild(li);
+                } else {
+                    alert("Error removing claim: " + errorMessage);
+                }
+                });
+            };
+            li.appendChild(removeBtn);
+            return li;
+        }
+        
+        // Function to add a claim for a user.
+        function addClaim(username, claim, callback) {
+            if (claim === "") {
+                callback(false, "Claim cannot be empty.");
+                return;
+            }
+            const payload = { username: username, claim: claim };
+            fetch("https://localhost:7056/claim", {
+                method: "PUT",
+                headers: {
+                "Content-Type": "application/json"
+                },
+                credentials: "include",
+                body: JSON.stringify(payload)
+            })
+                .then(response => {
+                if (response.ok) {
+                    callback(true);
+                } else {
+                    return response.json().then(err => { callback(false, err.message || "Unknown error"); });
+                }
+                })
+                .catch(error => {
+                callback(false, error.message || "Network error");
+                });
+        }
+        
+        // Function to remove a claim for a user.
+        function removeClaim(username, claim, callback) {
+            const payload = { username: username, claim: claim };
+            fetch("https://localhost:7056/claim", {
+                method: "DELETE",
+                headers: {
+                "Content-Type": "application/json"
+                },
+                credentials: "include",
+                body: JSON.stringify(payload)
+            })
+                .then(response => {
+                if (response.ok) {
+                    callback(true);
+                } else {
+                    return response.json().then(err => { callback(false, err.message || "Unknown error"); });
+                }
+                })
+                .catch(error => {
+                callback(false, error.message || "Network error");
+                });
+        }
+        
+        // Optional: logout function (if needed in sidebar)
+        function logout(event) {
+            event.preventDefault();
+            fetch("https://localhost:7056/logout", {
+                method: "GET",
+                credentials: "include"
+            })
+                .then(response => {
+                if (response.ok) {
+                    window.location.reload();
+                } else {
+                    throw new Error("Logout failed!");
+                }
+                })
+                .catch(error => alert("Logout failed!"));
+            }
+            
+            // When the page loads, fetch the users.
+            window.onload = function() {
+            loadUsers();
+        };
+    </script>
+    </head>
+    <body>
+    <!-- Global Header -->
+    <div class="header">
+        <div class="badge">Auth</div>
+    </div>
+    <!-- Centered container for sidebar and main content -->
+    <div class="container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <a href="/">Current User Info</a>
+            <a href="/create-user">Add User</a>
+            <a href="/edit-users">Edit Claims</a>
+        <a href="#" onclick="logout(event)">Logout</a>
+        </div>
+        <!-- Main Content Area -->
+        <div class="main-content">
+        <div class="content-container">
+            <h2>User Management &amp; Claim Editing</h2>
+            <div id="error-message-global" class="error-message"></div>
+            <div id="users-container">
+            <!-- User list will be loaded here -->
+            </div>
+        </div>
+        </div>
+    </div>
+    </body>
+</html>

@@ -1,0 +1,97 @@
+<!doctype html>
+<html>
+    <head>
+        <title>Auth</title>
+        <link rel="stylesheet" href="../bundle/mvp.css">
+        <link rel="stylesheet" href="../style.css">
+        <style>
+            input[type="text"],
+            input[type="password"] {
+                width: 100%;
+                padding: 8px;
+                border: 1px solid #ccc;
+                border-radius: 4px;
+            }
+            button {
+                padding: 10px 15px;
+                border: none;
+                background: #3676b3;
+                color: white;
+                border-radius: 4px;
+                cursor: pointer;
+            }
+            button:hover {
+                background: #265a94;
+            }
+        </style>
+        <script>
+            function login(event) {
+                event.preventDefault();
+                const username = document.getElementById('username').value;
+                const password = document.getElementById('password').value;
+
+                const urlParams = new URLSearchParams(document.location.search);
+                const returnUrl = urlParams.get('returnUrl') || '/';
+
+                fetch('https://localhost:7056/auth', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    credentials: 'include',
+                    body: JSON.stringify({ username, password })
+                })
+                .then(response => {
+                    if (response.status === 200) {
+                        if (returnUrl == null || returnUrl == '')
+                        {
+                            window.location.href = '/';
+                        }
+                        else
+                        {
+                            window.location.href = returnUrl;
+                        }
+                        
+                    } else {
+                        throw new Error('Login failed!');
+                    }
+                })
+                .catch(error => alert('Login failed!'));
+            }
+        </script>
+    </head>
+    <body>
+        <!-- Global Header -->
+        <div class="header">
+            <div class="badge">Auth</div>
+        </div>
+
+        <!-- Centered container for sidebar and main content -->
+        <div class="container">
+            <!-- Left-side Menu -->
+            <div class="sidebar">
+                <!-- Adjust these links as needed -->
+                <a href="/login">Login</a>
+                <a href="/register-user">Register</a>
+            </div>
+
+            <!-- Main Content Area -->
+            <div class="main-content">
+                <div class="content-container">
+                    <h2>Login</h2>
+                    <form onsubmit="login(event)">
+                        <div class="form-group">
+                            <label for="username">Username</label>
+                            <input type="text" id="username" name="username" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="password">Password</label>
+                            <input type="password" id="password" name="password" required>
+                        </div>
+                        <button type="submit">Login</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </body>
+</html>
