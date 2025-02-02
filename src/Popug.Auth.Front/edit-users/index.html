@@ -69,6 +69,13 @@
         }
     </style>
     <script>
+
+        function redirect(event) {
+            event.preventDefault();
+                
+            window.location.href = 'http://localhost:8080';
+        }
+
         // Fetch all users with their claims.
         function loadUsers() {
         fetch('https://localhost:7056/user/list', {
@@ -230,7 +237,7 @@
             })
                 .then(response => {
                 if (response.ok) {
-                    window.location.reload();
+                    window.location.href = '/login';
                 } else {
                     throw new Error("Logout failed!");
                 }
@@ -247,7 +254,7 @@
     <body>
     <!-- Global Header -->
     <div class="header">
-        <div class="badge">Auth</div>
+        <div class="badge" onclick="redirect(event)">Auth</div>
     </div>
     <!-- Centered container for sidebar and main content -->
     <div class="container">

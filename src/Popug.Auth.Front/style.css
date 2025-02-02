@@ -20,13 +20,16 @@ body {
     font-weight: bold;
 }
 .badge {
-    background: #3676b3;
+    background: #6386a9;
     color: white;
     padding: 5px 20px;
     border-radius: 5px;
     font-size: 18px;
     font-weight: bold;
-    filter: grayscale(100%);
+    cursor: pointer;
+}
+.badge:hover {
+    background: #265a94;
 }
 /* Centered container for sidebar and main content */
 .container {

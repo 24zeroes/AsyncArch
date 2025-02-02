@@ -82,12 +82,17 @@
                     document.getElementById("error-message").textContent = errorMsg;
                 });
             }
+            function redirect(event) {
+                event.preventDefault();
+                
+                window.location.href = 'http://localhost:8080';
+            }
         </script>
     </head>
     <body>
         <!-- Global Header -->
         <div class="header">
-            <div class="badge">Auth</div>
+            <div class="badge" onclick="redirect(event)">Auth</div>
         </div>
 
         <!-- Centered container for sidebar and main content -->
@@ -123,24 +128,5 @@
                 </div>
             </div>
         </div>
-
-        <!-- Optional: Include logout function if the user is logged in -->
-        <script>
-            function logout(event) {
-                event.preventDefault();
-                fetch('https://localhost:7056/logout', {
-                    method: 'GET',
-                    credentials: 'include'
-                })
-                .then(response => {
-                    if (response.ok) {
-                        window.location.reload();
-                    } else {
-                        throw new Error('Logout failed!');
-                    }
-                })
-                .catch(error => alert('Logout failed!'));
-            }
-        </script>
     </body>
 </html>

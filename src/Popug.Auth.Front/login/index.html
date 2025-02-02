@@ -25,6 +25,11 @@
             }
         </style>
         <script>
+            function redirect(event) {
+                event.preventDefault();
+                
+                window.location.href = 'http://localhost:8080';
+            }
             function login(event) {
                 event.preventDefault();
                 const username = document.getElementById('username').value;
@@ -63,7 +68,7 @@
     <body>
         <!-- Global Header -->
         <div class="header">
-            <div class="badge">Auth</div>
+            <div class="badge" onclick="redirect(event)">Auth</div>
         </div>
 
         <!-- Centered container for sidebar and main content -->

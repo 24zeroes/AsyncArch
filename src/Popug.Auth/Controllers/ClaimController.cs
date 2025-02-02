@@ -10,14 +10,11 @@ namespace Popug.Auth.Controllers;
 [Route("[controller]")]
 public class ClaimController : ControllerBase
 {
-    private const string SsoTokenKey = "ssoToken";
-    private readonly Cryptor _cryptor;
     private readonly AuthDbContext _context;
     private readonly IConfiguration _configuration;
     
-    public ClaimController(AuthDbContext context, Cryptor cryptor, IConfiguration configuration)
+    public ClaimController(AuthDbContext context, IConfiguration configuration)
     {
-        _cryptor = cryptor;
         _context = context;
         _configuration = configuration;
     }
@@ -29,7 +26,7 @@ public class ClaimController : ControllerBase
         if (user.Claims.Any(x => x.Name == request.Claim))
             return BadRequest($"User already have a claim {request.Claim}");
         
-        user.Claims.Add(new Claim() { Name = request.Claim});
+        user.Claims.Add(new Claim() { Name = request.Claim });
         await _context.SaveChangesAsync();
         
         return Ok();
