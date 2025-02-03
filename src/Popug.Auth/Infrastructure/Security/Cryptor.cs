@@ -2,7 +2,7 @@
 using System.Text;
 using Popug.Auth.Data;
 
-namespace Popug.Auth.Security;
+namespace Popug.Auth.Infrastructure.Security;
 
 public class Cryptor
 {
