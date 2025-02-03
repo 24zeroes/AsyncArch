@@ -1,0 +1,56 @@
+<!doctype html>
+<html>
+    <head>
+        <title>My Tasks</title>
+        <link rel="stylesheet" href="bundle/mvp.css">
+        <link rel="stylesheet" href="style.css">
+        <script type="text/javascript" src="/js/authCheck.js"></script>
+        <script>
+            function logout(event) {
+                event.preventDefault();
+                fetch('https://localhost:7056/logout', {
+                    method: 'GET',
+                    credentials: 'include'
+                })
+                .then(response => {
+                    if (response.ok) {
+                        window.location.href = 'http://localhost:8080/login';
+                    } else {
+                        throw new Error('Logout failed!');
+                    }
+                })
+                .catch(error => alert('Logout failed!'));
+            }
+        </script>
+    </head>
+    <body>
+        <!-- Global Header -->
+        <div class="header">
+            <div class="badge-task">Task</div>
+            <div class="badge-auth">Auth</div>
+        </div>
+
+        <!-- Centered container for sidebar and main content -->
+        <div class="container">
+            <!-- Left-side Menu -->
+            <div class="sidebar">
+                <a href="/">My Tasks</a>
+                <a href="/create-user">Add User</a>
+                <a href="/edit-users">Edit Claims</a>
+                <a href="#" onclick="logout(event)">Logout</a>
+            </div>
+
+            <!-- Main Content Area -->
+            <div class="main-content">
+                <div class="content-container">
+                    <h1>My Tasks</h1>
+                    
+                </div>
+            </div>
+        </div>
+
+        <script>
+    
+        </script>
+    </body>
+</html>
