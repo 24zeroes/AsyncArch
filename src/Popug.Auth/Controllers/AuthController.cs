@@ -46,14 +46,21 @@ public class AuthController : ControllerBase
     }
     
     [HttpGet("/check")]  
-    public async Task<ActionResult<string>> Check()
+    public async Task<ActionResult<string>> Check([FromQuery] string? claim)
     {
         HttpContext.Request.Cookies.TryGetValue(SsoTokenKey, out var token);
         if (token is null)
             return Unauthorized();
         
-        var user = JsonSerializer.Deserialize<User>(_cryptor.Decrypt(token));
-        if (!await _context.Users.Where(x => x.Username == user.Username).AnyAsync())
+        var userFromToken = JsonSerializer.Deserialize<User>(_cryptor.Decrypt(token));
+        if (userFromToken is null)
+            return Unauthorized();
+        
+        var user = await _context.Users.Include(u => u.Claims).Where(x => x.Id == userFromToken.Id).FirstOrDefaultAsync();
+        if (user is null)
+            return Unauthorized();
+
+        if (claim is not null && user.Claims.All(x => x.Name != claim))
             return Unauthorized();
         
         return Ok();
