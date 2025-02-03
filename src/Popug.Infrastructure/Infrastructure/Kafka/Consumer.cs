@@ -30,19 +30,16 @@ namespace Popug.Infrastructure.Kafka
     public class Consumer : BackgroundService
     {
         private readonly string _topic;
-        private readonly IConsumer<string, long> _consumer;
+        private readonly IConsumer<Null, string> _consumer;
 
         public Consumer(IConfiguration config)
         {
             var consumerConfig = new ConsumerConfig();
-            consumerConfig.EnableAutoCommit = false;
-            consumerConfig.AutoOffsetReset = AutoOffsetReset.Latest;
-            consumerConfig.EnablePartitionEof = true;
-            consumerConfig.GroupId = config.GetSection("Kafka:ConsumerSettings")["ConsumerGroup"];
+            consumerConfig.GroupId = config.GetSection("Kafka:ConsumerSettings")["GroupId"];
             consumerConfig.BootstrapServers = config.GetSection("Kafka:ConsumerSettings")["BootstrapServers"];
             
             _topic = "auth-cud";
-            _consumer = new ConsumerBuilder<string, long>(consumerConfig).Build();
+            _consumer = new ConsumerBuilder<Null, string>(consumerConfig).Build();
         }
 
         protected override Task ExecuteAsync(CancellationToken stoppingToken)
@@ -61,7 +58,7 @@ namespace Popug.Infrastructure.Kafka
                     var cr = _consumer.Consume(cancellationToken);
 
                     // Handle message...
-                    Console.WriteLine($"{cr.Message.Key}: {cr.Message.Value}ms");
+                    Console.WriteLine($" CONSUMED: {cr.Message.Value}");
                 }
                 catch (OperationCanceledException)
                 {
