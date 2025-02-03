@@ -32,7 +32,11 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Infrastructure\" />
+      <Folder Include="Infrastructure\Kafka\" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <ProjectReference Include="..\Popug.Contracts\Popug.Contracts.csproj" />
     </ItemGroup>
 
 </Project>

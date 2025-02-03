@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using Popug.Auth.Data;
+using Popug.Auth.Infrastructure.Kafka;
 using Popug.Auth.Infrastructure.Security;
 
 namespace Popug.Auth;
@@ -54,6 +55,9 @@ public class Program
                         .AllowCredentials();
                 });
         });
+        
+        builder.Services.AddSingleton<ClientHandle>();
+        builder.Services.AddSingleton<Producer<Null, string>>();
         
         // Add services to the container.
         var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ??

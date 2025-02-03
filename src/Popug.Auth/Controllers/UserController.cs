@@ -1,8 +1,11 @@
 ﻿using System.Text.Json;
+using Confluent.Kafka;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Popug.Auth.Data;
+using Popug.Auth.Infrastructure.Kafka;
 using Popug.Auth.Infrastructure.Security;
+using Popug.Contracts;
 
 namespace Popug.Auth.Controllers;
 
@@ -14,12 +17,14 @@ public class UserController : ControllerBase
     private readonly Cryptor _cryptor;
     private readonly AuthDbContext _context;
     private readonly IConfiguration _configuration;
+    private readonly Producer<Null, string> _producer;
     
-    public UserController(AuthDbContext context, Cryptor cryptor, IConfiguration configuration)
+    public UserController(AuthDbContext context, Cryptor cryptor, IConfiguration configuration, Producer<Null, string> producer)
     {
         _cryptor = cryptor;
         _context = context;
         _configuration = configuration;
+        _producer = producer;
     }
     [HttpGet("/user")]
     public async Task<ActionResult<GetUserResponse>> GetUser()
@@ -57,6 +62,9 @@ public class UserController : ControllerBase
         };
         await _context.Users.AddAsync(newUser);
         await _context.SaveChangesAsync();
+        
+        var userAddedMessage = new UserAdded() { Username = newUser.Username, Id = newUser.Id, Claims = newUser.Claims.Select(x => x.Name).ToList() };
+        await _producer.ProduceAsync("auth-cud", new Message<Null, string>(){ Value = JsonSerializer.Serialize(userAddedMessage) });
         
         return Ok();
     }
