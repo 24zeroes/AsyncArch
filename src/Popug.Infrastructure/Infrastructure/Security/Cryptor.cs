@@ -1,8 +1,8 @@
 ﻿using System.Security.Cryptography;
 using System.Text;
-using Popug.Auth.Data;
+using Microsoft.Extensions.Configuration;
 
-namespace Popug.Auth.Infrastructure.Security;
+namespace Popug.Infrastructure.Security;
 
 public class Cryptor
 {

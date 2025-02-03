@@ -16,22 +16,24 @@
 
 using Confluent.Kafka;
 using System;
+using System.Text.Json;
 using System.Threading.Tasks;
+using Popug.Contracts;
 
 
-namespace Popug.Auth.Infrastructure.Kafka
+namespace Popug.Infrastructure.Kafka
 {
     /// <summary>
     ///     Leverages the injected ClientHandle instance to allow
     ///     Confluent.Kafka.Message{K,V}s to be produced to Kafka.
     /// </summary>
-    public class Producer<K,V>
+    public class Producer
     {
-        IProducer<K, V> kafkaHandle;
+        private readonly IProducer<Null, string> _producer;
 
         public Producer(ClientHandle handle)
         {
-            kafkaHandle = new DependentProducerBuilder<K, V>(handle.Handle).Build();
+            _producer = new DependentProducerBuilder<Null, string>(handle.Handle).Build();
         }
 
         /// <summary>
@@ -39,19 +41,14 @@ namespace Popug.Auth.Infrastructure.Kafka
         ///     via the returned Task. Use this method of producing if you would
         ///     like to await the result before flow of execution continues.
         /// <summary>
-        public Task ProduceAsync(string topic, Message<K, V> message)
-            => this.kafkaHandle.ProduceAsync(topic, message);
-
-        /// <summary>
-        ///     Asynchronously produce a message and expose delivery information
-        ///     via the provided callback function. Use this method of producing
-        ///     if you would like flow of execution to continue immediately, and
-        ///     handle delivery information out-of-band.
-        /// </summary>
-        public void Produce(string topic, Message<K, V> message, Action<DeliveryReport<K, V>> deliveryHandler = null)
-            => this.kafkaHandle.Produce(topic, message, deliveryHandler);
+        public Task ProduceAsync(string topic, IKafkaMessage message)
+        {
+            var m = new Message<Null, string>() {Value = JsonSerializer.Serialize(message, message.GetType())};
+            return _producer.ProduceAsync(topic, m);
+        }
+        
 
         public void Flush(TimeSpan timeout)
-            => this.kafkaHandle.Flush(timeout);
+            => _producer.Flush(timeout);
     }
 }

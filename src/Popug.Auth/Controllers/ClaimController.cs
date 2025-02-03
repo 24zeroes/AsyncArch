@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Popug.Auth.Data;
-using Popug.Auth.Infrastructure.Security;
+using Popug.Infrastructure.Security;
 
 namespace Popug.Auth.Controllers;
 

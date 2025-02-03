@@ -14,7 +14,6 @@
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="Confluent.Kafka" Version="2.8.0" />
         <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="9.0.1"/>
         <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="9.0.1"/>
         <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="9.0.1"/>
@@ -32,11 +31,8 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Infrastructure\Kafka\" />
-    </ItemGroup>
-
-    <ItemGroup>
       <ProjectReference Include="..\Popug.Contracts\Popug.Contracts.csproj" />
+        <ProjectReference Include="..\Popug.Infrastructure\Popug.Infrastructure.csproj" />
     </ItemGroup>
 
 </Project>

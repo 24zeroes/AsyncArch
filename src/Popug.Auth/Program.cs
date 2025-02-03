@@ -1,10 +1,8 @@
-using Confluent.Kafka;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using Popug.Auth.Data;
-using Popug.Auth.Infrastructure.Kafka;
-using Popug.Auth.Infrastructure.Security;
+using Popug.Infrastructure.Kafka;
+using Popug.Infrastructure.Security;
 
 namespace Popug.Auth;
 
@@ -57,7 +55,7 @@ public class Program
         });
         
         builder.Services.AddSingleton<ClientHandle>();
-        builder.Services.AddSingleton<Producer<Null, string>>();
+        builder.Services.AddSingleton<Producer>();
         
         // Add services to the container.
         var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ??
