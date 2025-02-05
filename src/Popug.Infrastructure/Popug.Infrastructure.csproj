@@ -7,17 +7,13 @@
     </PropertyGroup>
     
     <ItemGroup>
+        <FrameworkReference Include="Microsoft.AspNetCore.App" />
         <PackageReference Include="Confluent.Kafka" Version="2.8.0" />
-        <PackageReference Include="Microsoft.Extensions.Configuration.Abstractions" Version="9.0.1" />
+
     </ItemGroup>
     
     <ItemGroup>
       <ProjectReference Include="..\Popug.Contracts\Popug.Contracts.csproj" />
     </ItemGroup>
     
-    <ItemGroup>
-      <Reference Include="Microsoft.Extensions.Hosting.Abstractions">
-        <HintPath>..\..\..\..\..\..\Program Files\dotnet\shared\Microsoft.AspNetCore.App\9.0.1\Microsoft.Extensions.Hosting.Abstractions.dll</HintPath>
-      </Reference>
-    </ItemGroup>
 </Project>

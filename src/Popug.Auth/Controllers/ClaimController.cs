@@ -7,6 +7,7 @@ using Popug.Infrastructure.Security;
 namespace Popug.Auth.Controllers;
 
 [ApiController]
+[AuthZ("admin")]
 [Route("[controller]")]
 public class ClaimController : ControllerBase
 {

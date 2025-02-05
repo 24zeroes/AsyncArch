@@ -63,7 +63,12 @@ public class UserController : ControllerBase
         await _context.Users.AddAsync(newUser);
         await _context.SaveChangesAsync();
         
-        var userAddedMessage = new UserAdded() { Username = newUser.Username, Id = newUser.Id, Claims = newUser.Claims.Select(x => x.Name).ToList() };
+        var userAddedMessage = new UserAdded()
+        {
+            Username = newUser.Username, 
+            Id = newUser.Id, 
+            Claims = newUser.Claims.Select(x => x.Name).ToList()
+        };
         await _producer.ProduceAsync("auth-cud", userAddedMessage);
         
         return Ok();

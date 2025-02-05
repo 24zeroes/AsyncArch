@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Popug.Auth.Data;
 using Popug.Infrastructure.Security;
+using Popug.Contracts;
 
 namespace Popug.Auth.Controllers;
 
@@ -25,12 +26,20 @@ public class AuthController : ControllerBase
     [HttpPost]
     public async Task<ActionResult<string>> Login([FromBody]LoginRequest request)
     {
-        var user = await _context.Users.Where(x => x.Username == request.Username).FirstAsync();
+        var user = await _context.Users.Where(x => x.Username == request.Username)
+            .Include(user => user.Claims).FirstAsync();
 
         if (!_cryptor.VerifyHash(request.Password, user.PasswordHash))
             return BadRequest("No such user exists");
 
-        var token = _cryptor.Encrypt(JsonSerializer.Serialize(user));
+        var securityToken = new SecurityToken()
+        {
+            UserId = user.Id,
+            UserName = user.Username,
+            Claims = user.Claims.Select(x => x.Name).ToArray()
+        };
+
+        var token = _cryptor.Encrypt(JsonSerializer.Serialize(securityToken));
         var cookie = new CookieOptions
         {
             HttpOnly = true,
@@ -52,11 +61,12 @@ public class AuthController : ControllerBase
         if (token is null)
             return Unauthorized();
         
-        var userFromToken = JsonSerializer.Deserialize<User>(_cryptor.Decrypt(token));
-        if (userFromToken is null)
+        var securityToken = JsonSerializer.Deserialize<SecurityToken>(_cryptor.Decrypt(token));
+        if (securityToken is null)
             return Unauthorized();
         
-        var user = await _context.Users.Include(u => u.Claims).Where(x => x.Id == userFromToken.Id).FirstOrDefaultAsync();
+        var user = await _context.Users.Include(u => u.Claims)
+            .Where(x => x.Id == securityToken.UserId).FirstOrDefaultAsync();
         if (user is null)
             return Unauthorized();
 

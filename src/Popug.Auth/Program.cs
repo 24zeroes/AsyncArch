@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 using Popug.Auth.Data;
@@ -67,7 +68,10 @@ public class Program
         
         builder.Services.AddTransient<Cryptor>();
 
-        builder.Services.AddControllers();
+        builder.Services.AddControllers(c =>
+        {
+            c.Filters.Add(typeof(AuthZFilter));
+        });
         // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
         builder.Services.AddOpenApi();
         builder.Services.AddSwaggerGen(c =>
@@ -76,6 +80,8 @@ public class Program
         });
 
         var app = builder.Build();
+        
+        app.UseMiddleware<AuthNMiddleware>();
         
         // Configure the HTTP request pipeline.
         if (app.Environment.IsDevelopment())
