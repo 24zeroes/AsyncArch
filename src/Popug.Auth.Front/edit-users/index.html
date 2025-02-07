@@ -5,6 +5,8 @@
     <link rel="stylesheet" href="../bundle/mvp.css">
     <link rel="stylesheet" href="../style.css">
     <script type="text/javascript" src="/js/authCheck.js"></script>
+    <script type="text/javascript" src="/js/loadTemplate.js"></script>
+    <script type="text/javascript" src="/js/redirect.js"></script>
     <style>
         /* User list styles */
         .user {
@@ -69,12 +71,9 @@
         }
     </style>
     <script>
-
-        function redirect(event) {
-            event.preventDefault();
-                
-            window.location.href = 'http://localhost:8080';
-        }
+            document.addEventListener('DOMContentLoaded', () => {
+                loadTemplate('/templates/header.html', 'header-template', 'header-placeholder');
+            });
 
         // Fetch all users with their claims.
         function loadUsers() {
@@ -252,29 +251,26 @@
     </script>
     </head>
     <body>
-    <!-- Global Header -->
-    <div class="header">
-        <div class="badge" onclick="redirect(event)">Auth</div>
-    </div>
-    <!-- Centered container for sidebar and main content -->
-    <div class="container">
-        <!-- Sidebar -->
-        <div class="sidebar">
-            <a href="/">Current User Info</a>
-            <a href="/create-user">Add User</a>
-            <a href="/edit-users">Edit Claims</a>
-        <a href="#" onclick="logout(event)">Logout</a>
-        </div>
-        <!-- Main Content Area -->
-        <div class="main-content">
-        <div class="content-container">
-            <h2>User Management &amp; Claim Editing</h2>
-            <div id="error-message-global" class="error-message"></div>
-            <div id="users-container">
-            <!-- User list will be loaded here -->
+        <div id="header-placeholder"></div>
+        <!-- Centered container for sidebar and main content -->
+        <div class="container">
+            <!-- Sidebar -->
+            <div class="sidebar">
+                <a href="/">Current User Info</a>
+                <a href="/create-user">Add User</a>
+                <a href="/edit-users">Edit Claims</a>
+            <a href="#" onclick="logout(event)">Logout</a>
+            </div>
+            <!-- Main Content Area -->
+            <div class="main-content">
+            <div class="content-container">
+                <h2>User Management &amp; Claim Editing</h2>
+                <div id="error-message-global" class="error-message"></div>
+                <div id="users-container">
+                <!-- User list will be loaded here -->
+                </div>
+            </div>
             </div>
         </div>
-        </div>
-    </div>
     </body>
 </html>

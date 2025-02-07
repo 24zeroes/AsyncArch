@@ -19,7 +19,7 @@ body {
     font-size: 20px;
     font-weight: bold;
 }
-.badge {
+.badge-auth {
     background: #6386a9;
     color: white;
     padding: 5px 20px;
@@ -27,9 +27,23 @@ body {
     font-size: 18px;
     font-weight: bold;
     cursor: pointer;
+    margin-right: 3px;
 }
-.badge:hover {
+.badge-auth:hover {
     background: #265a94;
+}
+.badge-task {
+    background: #63a985;
+    color: white;
+    padding: 5px 20px;
+    border-radius: 5px;
+    font-size: 18px;
+    font-weight: bold;
+    cursor: pointer;
+    margin-right: 3px;
+}
+.badge-task:hover {
+    background: #248f58;
 }
 /* Centered container for sidebar and main content */
 .container {

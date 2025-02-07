@@ -5,7 +5,12 @@
         <link rel="stylesheet" href="bundle/mvp.css">
         <link rel="stylesheet" href="style.css">
         <script type="text/javascript" src="/js/authCheck.js"></script>
+        <script type="text/javascript" src="/js/loadTemplate.js"></script>
+        <script type="text/javascript" src="/js/redirect.js"></script>
         <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                loadTemplate('/templates/header.html', 'header-template', 'header-placeholder');
+            });
             function logout(event) {
                 event.preventDefault();
                 fetch('https://localhost:7056/logout', {
@@ -24,10 +29,7 @@
         </script>
     </head>
     <body>
-        <!-- Global Header -->
-        <div class="header">
-            <div class="badge">Auth</div>
-        </div>
+        <div id="header-placeholder"></div>
 
         <!-- Centered container for sidebar and main content -->
         <div class="container">
