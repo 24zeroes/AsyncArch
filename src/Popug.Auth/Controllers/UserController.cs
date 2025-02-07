@@ -33,8 +33,8 @@ public class UserController : ControllerBase
         if (token is null)
             return Unauthorized();
         
-        var user = JsonSerializer.Deserialize<User>(_cryptor.Decrypt(token));
-        var dbUser = await _context.Users.Include(u => u.Claims).FirstOrDefaultAsync(x => x.Id == user.Id);
+        var user = JsonSerializer.Deserialize<SecurityToken>(_cryptor.Decrypt(token));
+        var dbUser = await _context.Users.Include(u => u.Claims).FirstOrDefaultAsync(x => x.Id == user.UserId);
         
         if (dbUser is null)
             return Unauthorized();

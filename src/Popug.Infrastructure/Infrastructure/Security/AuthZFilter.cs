@@ -25,7 +25,10 @@ public class AuthZFilter : IAsyncAuthorizationFilter
             return;
         }
 
-        if (authZAttribute.AllowedScopes.All(scope => !context.HttpContext.User.IsInRole(scope)))
+        if (authZAttribute.AllowedScopes.Length == 0)
+            return;
+        
+        if (!authZAttribute.AllowedScopes.Any(scope => context.HttpContext.User.IsInRole(scope)))
         {
             context.Result = new UnauthorizedResult();
             return;
