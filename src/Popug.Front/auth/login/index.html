@@ -2,10 +2,10 @@
 <html>
     <head>
         <title>Auth</title>
-        <link rel="stylesheet" href="../bundle/mvp.css">
-        <link rel="stylesheet" href="../style.css">
-        <script type="text/javascript" src="/js/loadTemplate.js"></script>
-        <script type="text/javascript" src="/js/redirect.js"></script>
+        <link rel="stylesheet" href="../../bundle/mvp.css">
+        <link rel="stylesheet" href="../../style.css">
+        <script type="text/javascript" src="../../js/loadTemplate.js"></script>
+        <script type="text/javascript" src="../../js/redirect.js"></script>
         <style>
             input[type="text"],
             input[type="password"] {
@@ -28,7 +28,7 @@
         </style>
         <script>
             document.addEventListener('DOMContentLoaded', () => {
-                loadTemplate('/templates/header.html', 'header-template', 'header-placeholder');
+                loadTemplate('../../templates/header.html', 'header-template', 'header-placeholder');
             });
             function login(event) {
                 event.preventDefault();
@@ -73,8 +73,8 @@
             <!-- Left-side Menu -->
             <div class="sidebar">
                 <!-- Adjust these links as needed -->
-                <a href="/login">Login</a>
-                <a href="/register-user">Register</a>
+                <a href="/auth/login">Login</a>
+                <a href="/auth/register-user">Register</a>
             </div>
 
             <!-- Main Content Area -->

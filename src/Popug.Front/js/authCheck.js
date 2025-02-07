@@ -13,5 +13,5 @@ fetch("https://localhost:7056/check", {
 .catch(error => {
     console.error("Authentication check failed:", error);
     // Redirect to the login page if not authenticated
-    window.location.href = 'http://localhost:8080/login';
+    window.location.href = '/auth/login';
 });

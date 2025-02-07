@@ -2,11 +2,12 @@
 <html>
   <head>
     <title>User Management (Admin)</title>
-    <link rel="stylesheet" href="../bundle/mvp.css">
-    <link rel="stylesheet" href="../style.css">
-    <script type="text/javascript" src="/js/authCheck.js"></script>
-    <script type="text/javascript" src="/js/loadTemplate.js"></script>
-    <script type="text/javascript" src="/js/redirect.js"></script>
+    <link rel="stylesheet" href="../../bundle/mvp.css">
+    <link rel="stylesheet" href="../../style.css">
+    <script type="text/javascript" src="../../js/authCheck.js"></script>
+    <script type="text/javascript" src="../../js/loadTemplate.js"></script>
+    <script type="text/javascript" src="../../js/redirect.js"></script>
+    <script type="text/javascript" src="../../js/logout.js"></script>
     <style>
         /* User list styles */
         .user {
@@ -73,6 +74,7 @@
     <script>
             document.addEventListener('DOMContentLoaded', () => {
                 loadTemplate('/templates/header.html', 'header-template', 'header-placeholder');
+                loadTemplate('../menu-template.html', 'menu-template', 'menu-placeholder');
             });
 
         // Fetch all users with their claims.
@@ -226,23 +228,6 @@
                 callback(false, error.message || "Network error");
                 });
         }
-        
-        // Optional: logout function (if needed in sidebar)
-        function logout(event) {
-            event.preventDefault();
-            fetch("https://localhost:7056/logout", {
-                method: "GET",
-                credentials: "include"
-            })
-                .then(response => {
-                if (response.ok) {
-                    window.location.href = '/login';
-                } else {
-                    throw new Error("Logout failed!");
-                }
-                })
-                .catch(error => alert("Logout failed!"));
-            }
             
             // When the page loads, fetch the users.
             window.onload = function() {
@@ -252,15 +237,10 @@
     </head>
     <body>
         <div id="header-placeholder"></div>
-        <!-- Centered container for sidebar and main content -->
+
         <div class="container">
-            <!-- Sidebar -->
-            <div class="sidebar">
-                <a href="/">Current User Info</a>
-                <a href="/create-user">Add User</a>
-                <a href="/edit-users">Edit Claims</a>
-            <a href="#" onclick="logout(event)">Logout</a>
-            </div>
+            <div id="menu-placeholder"></div>
+
             <!-- Main Content Area -->
             <div class="main-content">
             <div class="content-container">

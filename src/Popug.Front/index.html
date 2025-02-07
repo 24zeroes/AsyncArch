@@ -1,0 +1,71 @@
+<!doctype html>
+<html>
+    <head>
+        <title>Auth</title>
+        <link rel="stylesheet" href="bundle/mvp.css">
+        <link rel="stylesheet" href="style.css">
+        <script type="text/javascript" src="js/loadTemplate.js"></script>
+        <script type="text/javascript" src="js/redirect.js"></script>
+        <style>
+            input[type="text"],
+            input[type="password"] {
+                width: 100%;
+                padding: 8px;
+                border: 1px solid #ccc;
+                border-radius: 4px;
+            }
+            button {
+                padding: 10px 15px;
+                border: none;
+                background: #3676b3;
+                color: white;
+                border-radius: 4px;
+                cursor: pointer;
+            }
+            button:hover {
+                background: #265a94;
+            }
+        </style>
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                loadTemplate('/templates/header.html', 'header-template', 'header-placeholder');
+            });
+            function login(event) {
+                event.preventDefault();
+                const username = document.getElementById('username').value;
+                const password = document.getElementById('password').value;
+
+                const urlParams = new URLSearchParams(document.location.search);
+                const returnUrl = urlParams.get('returnUrl') || '/';
+
+                fetch('https://localhost:7056/auth', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    credentials: 'include',
+                    body: JSON.stringify({ username, password })
+                })
+                .then(response => {
+                    if (response.status === 200) {
+                        if (returnUrl == null || returnUrl == '')
+                        {
+                            window.location.href = '/';
+                        }
+                        else
+                        {
+                            window.location.href = returnUrl;
+                        }
+                        
+                    } else {
+                        throw new Error('Login failed!');
+                    }
+                })
+                .catch(error => alert('Login failed!'));
+            }
+        </script>
+    </head>
+    <body>
+        <div id="header-placeholder"></div>
+    </body>
+</html>

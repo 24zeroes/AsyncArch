@@ -2,11 +2,12 @@
 <html>
     <head>
         <title>Create User (Admin)</title>
-        <link rel="stylesheet" href="../bundle/mvp.css">
-        <link rel="stylesheet" href="../style.css">
-        <script type="text/javascript" src="/js/authCheck.js"></script>
-        <script type="text/javascript" src="/js/loadTemplate.js"></script>
-        <script type="text/javascript" src="/js/redirect.js"></script>
+        <link rel="stylesheet" href="../../bundle/mvp.css">
+        <link rel="stylesheet" href="../../style.css">
+        <script type="text/javascript" src="../../js/authCheck.js"></script>
+        <script type="text/javascript" src="../../js/loadTemplate.js"></script>
+        <script type="text/javascript" src="../../js/redirect.js"></script>
+        <script type="text/javascript" src="../../js/logout.js"></script>
         <style>
             input[type="text"],
             input[type="password"] {
@@ -61,23 +62,9 @@
         </style>
         <script>
             document.addEventListener('DOMContentLoaded', () => {
-                loadTemplate('/templates/header.html', 'header-template', 'header-placeholder');
+                loadTemplate('../../templates/header.html', 'header-template', 'header-placeholder');
+                loadTemplate('../menu-template.html', 'menu-template', 'menu-placeholder');
             });
-            function logout(event) {
-                event.preventDefault();
-                fetch('https://localhost:7056/logout', {
-                    method: 'GET',
-                    credentials: 'include'
-                })
-                .then(response => {
-                    if (response.ok) {
-                        window.location.href = '/login';
-                    } else {
-                        throw new Error('Logout failed!');
-                    }
-                })
-                .catch(error => alert('Logout failed!'));
-            }
             
             // We'll store the claims in a JavaScript array.
             let claims = [];
@@ -168,12 +155,7 @@
         <!-- Centered container for sidebar and main content -->
         <div class="container">
             <!-- Left-side Menu -->
-            <div class="sidebar">
-                <a href="/">Current User Info</a>
-                <a href="/create-user">Add User</a>
-                <a href="/edit-users">Edit Claims</a>
-                <a href="#" onclick="logout(event)">Logout</a>
-            </div>
+            <div id="menu-placeholder"></div>
 
             <!-- Main Content Area -->
             <div class="main-content">
