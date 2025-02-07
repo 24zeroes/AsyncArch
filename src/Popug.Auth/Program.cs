@@ -64,7 +64,6 @@ public class Program
                                throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
         builder.Services.AddDbContext<AuthDbContext>(options =>
             options.UseSqlite(connectionString));
-        builder.Services.AddDatabaseDeveloperPageExceptionFilter();
         
         builder.Services.AddTransient<Cryptor>();
 
@@ -88,7 +87,6 @@ public class Program
         {
             app.UseCors(AllowDevOrigins);
             app.MapOpenApi();
-            app.UseMigrationsEndPoint();
         }
         else
         {

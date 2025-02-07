@@ -1,32 +1,110 @@
+using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi.Models;
+using Popug.Infrastructure.Kafka;
+using Popug.Infrastructure.Security;
+
 namespace Popug.Task;
 
 public class Program
 {
+    const string AllowDevOrigins = "_allowDevOrigins";
     public static void Main(string[] args)
     {
-        var builder = WebApplication.CreateBuilder(args);
+        if (args.Contains("--migrate"))
+        {
+            // Need to use ConfigurationBuilder to retrieve connection string from appsettings.json
+            var configuration = new ConfigurationBuilder()
+                .AddJsonFile("appsettings.json")
+                .Build();
 
+            var optionsBuilder = new DbContextOptionsBuilder<TaskDbContext>();
+            optionsBuilder.UseSqlite(configuration.GetConnectionString("DefaultConnection"));
+
+
+            try
+            {
+                // There is no DI at current step, so need to create context manually
+                using var dbContext = new TaskDbContext(optionsBuilder.Options);
+                dbContext.Database.MigrateAsync().GetAwaiter().GetResult();
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
+            
+            Console.WriteLine("Migration success");
+            return;
+        }
+        
+                var builder = WebApplication.CreateBuilder(args);
+
+        builder.Services.AddCors(options =>
+        {
+            options.AddPolicy(name: AllowDevOrigins,
+                policy  =>
+                {
+                    policy.WithOrigins(
+                        "http://localhost:8080",
+                        "http://localhost:8081")
+                        .AllowAnyHeader()
+                        .AllowAnyMethod()
+                        .AllowCredentials();
+                });
+        });
+        
+        builder.Services.AddSingleton<ClientHandle>();
+        builder.Services.AddSingleton<Producer>();
+        builder.Services.AddHostedService<Consumer>();
+        
         // Add services to the container.
+        var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ??
+                               throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
+        builder.Services.AddDbContext<TaskDbContext>(options =>
+            options.UseSqlite(connectionString));
+        
+        builder.Services.AddTransient<Cryptor>();
 
-        builder.Services.AddControllers();
+        builder.Services.AddControllers(c =>
+        {
+            c.Filters.Add(typeof(AuthZFilter));
+        });
         // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
         builder.Services.AddOpenApi();
+        builder.Services.AddSwaggerGen(c =>
+        {
+            c.SwaggerDoc("v1", new OpenApiInfo { Title = "Task", Version = "v1" });
+        });
 
         var app = builder.Build();
-
+        
+        app.UseMiddleware<AuthNMiddleware>();
+        
         // Configure the HTTP request pipeline.
         if (app.Environment.IsDevelopment())
         {
+            app.UseCors(AllowDevOrigins);
             app.MapOpenApi();
+        }
+        else
+        {
+            app.UseExceptionHandler("/Error");
+            // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
+            app.UseHsts();
         }
 
         app.UseHttpsRedirection();
 
+        app.UseRouting();
+
         app.UseAuthorization();
 
-
         app.MapControllers();
-
+        app.UseSwagger();
+        app.UseSwaggerUI(c =>
+        {
+            c.SwaggerEndpoint("v1/swagger.json", "Auth v1");
+        });
         app.Run();
     }
 }

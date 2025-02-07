@@ -16,7 +16,7 @@ namespace WebApplication1.Migrations
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "9.0.1");
 
-            modelBuilder.Entity("Popug.Auth.Data.Claim", b =>
+            modelBuilder.Entity("Popug.Auth.Domain.Claim", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -36,7 +36,7 @@ namespace WebApplication1.Migrations
                     b.ToTable("Claims");
                 });
 
-            modelBuilder.Entity("Popug.Auth.Data.User", b =>
+            modelBuilder.Entity("Popug.Auth.Domain.User", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -55,14 +55,14 @@ namespace WebApplication1.Migrations
                     b.ToTable("Users");
                 });
 
-            modelBuilder.Entity("Popug.Auth.Data.Claim", b =>
+            modelBuilder.Entity("Popug.Auth.Domain.Claim", b =>
                 {
-                    b.HasOne("Popug.Auth.Data.User", null)
+                    b.HasOne("Popug.Auth.Domain.User", null)
                         .WithMany("Claims")
                         .HasForeignKey("UserId");
                 });
 
-            modelBuilder.Entity("Popug.Auth.Data.User", b =>
+            modelBuilder.Entity("Popug.Auth.Domain.User", b =>
                 {
                     b.Navigation("Claims");
                 });
