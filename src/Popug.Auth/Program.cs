@@ -57,7 +57,6 @@ public class Program
         
         builder.Services.AddSingleton<ClientHandle>();
         builder.Services.AddSingleton<Producer>();
-        builder.Services.AddHostedService<Consumer>();
         
         // Add services to the container.
         var connectionString = builder.Configuration.GetConnectionString("DefaultConnection") ??
