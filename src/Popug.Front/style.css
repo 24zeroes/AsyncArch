@@ -60,6 +60,23 @@ body {
     padding: 20px;
     flex-shrink: 0;
 }
+.sidebar-task {
+    width: 200px;
+    background: #63a985;
+    color: white;
+    padding: 20px;
+    flex-shrink: 0;
+}
+.sidebar-task a {
+    color: white;
+    text-decoration: none;
+    margin-bottom: 15px;
+    display: block;
+    font-size: 16px;
+}
+.sidebar-task a:hover {
+    text-decoration: underline;
+}
 .sidebar a {
     color: white;
     text-decoration: none;
