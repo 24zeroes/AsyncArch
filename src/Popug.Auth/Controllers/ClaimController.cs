@@ -8,7 +8,7 @@ namespace Popug.Auth.Controllers;
 
 [ApiController]
 [AuthZ("admin")]
-[Route("[controller]")]
+[Route("claims")]
 public class ClaimController : ControllerBase
 {
     private readonly AuthDbContext _context;

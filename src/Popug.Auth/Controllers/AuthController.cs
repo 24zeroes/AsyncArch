@@ -8,7 +8,7 @@ using Popug.Contracts;
 namespace Popug.Auth.Controllers;
 
 [ApiController]
-[Route("[controller]")]
+[Route("auth")]
 public class AuthController : ControllerBase
 {
     private const string SsoTokenKey = "ssoToken";
