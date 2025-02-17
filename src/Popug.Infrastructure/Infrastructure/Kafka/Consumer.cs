@@ -14,12 +14,10 @@
 //
 // Refer to LICENSE for more information.
 
-using System;
-using System.Threading;
-using System.Threading.Tasks;
 using Confluent.Kafka;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 
 namespace Popug.Infrastructure.Kafka
 {
@@ -31,15 +29,20 @@ namespace Popug.Infrastructure.Kafka
     {
         private readonly string _topic;
         private readonly IConsumer<Null, string> _consumer;
+        private readonly ILogger<Consumer> _logger;
 
-        public Consumer(IConfiguration config)
+        public Consumer(IConfiguration config, ILogger<Consumer> logger)
         {
             var consumerConfig = new ConsumerConfig();
             consumerConfig.GroupId = config.GetSection("Kafka:ConsumerSettings")["GroupId"];
             consumerConfig.BootstrapServers = config.GetSection("Kafka:ConsumerSettings")["BootstrapServers"];
             
             _topic = "auth-cud";
-            _consumer = new ConsumerBuilder<Null, string>(consumerConfig).Build();
+            _logger = logger;
+            _consumer = new ConsumerBuilder<Null, string>(consumerConfig)
+                .SetErrorHandler(HandleError)
+                .SetLogHandler(HandleLog)
+                .Build();
         }
 
         protected override Task ExecuteAsync(CancellationToken stoppingToken)
@@ -47,9 +50,29 @@ namespace Popug.Infrastructure.Kafka
             return Task.Run(() => StartConsumerLoop(stoppingToken), stoppingToken);
         }
         
+        protected void HandleError(IConsumer<Null, string> consumer, Error error)
+        {
+            _logger.LogError(error.Reason);
+        }
+
+        protected void HandleLog(IConsumer<Null, string> consumer, LogMessage message)
+        {
+            _logger.LogInformation(message.Message);
+        }
+        
         private void StartConsumerLoop(CancellationToken cancellationToken)
         {
-            _consumer.Subscribe(_topic);
+            _logger.LogError("test");
+            try
+            {
+                _consumer.Subscribe(_topic);
+            }
+            catch (Exception e)
+            {
+                _logger.LogError(e, $"An error occured while starting consumer. {e.Message}");
+                throw;
+            }
+            
 
             while (!cancellationToken.IsCancellationRequested)
             {
@@ -58,7 +81,7 @@ namespace Popug.Infrastructure.Kafka
                     var cr = _consumer.Consume(cancellationToken);
 
                     // Handle message...
-                    Console.WriteLine($" CONSUMED: {cr.Message.Value}");
+                    _logger.LogInformation($"Consumed message: {cr.Message.Value}");
                 }
                 catch (OperationCanceledException)
                 {
@@ -67,7 +90,7 @@ namespace Popug.Infrastructure.Kafka
                 catch (ConsumeException e)
                 {
                     // Consumer errors should generally be ignored (or logged) unless fatal.
-                    Console.WriteLine($"Consume error: {e.Error.Reason}");
+                    _logger.LogError(e, $"Error occured while consuming message: {e.Message} {Environment.NewLine} {e.Error.Reason}");
 
                     if (e.Error.IsFatal)
                     {
@@ -77,7 +100,7 @@ namespace Popug.Infrastructure.Kafka
                 }
                 catch (Exception e)
                 {
-                    Console.WriteLine($"Unexpected error: {e}");
+                    _logger.LogError(e, $"Unexpected error {e.Message} {Environment.NewLine} {e.StackTrace}");
                     break;
                 }
             }

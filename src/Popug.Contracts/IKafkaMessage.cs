@@ -2,4 +2,5 @@
 
 public interface IKafkaMessage
 {
+    public string EventType { get; }
 }
